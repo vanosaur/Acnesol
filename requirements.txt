@@ -1,0 +1,13 @@
+streamlit
+tensorflow
+joblib
+numpy
+groq
+pillow
+scikit-learn
+duckduckgo-search
+fastapi
+uvicorn
+python-multipart
+pydantic
+python-dotenv
