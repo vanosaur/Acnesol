@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ConsultationFlow from './ConsultationFlow';
 import ResultsDashboard from './ResultsDashboard';
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 const DEFAULT_FORM = {
   duration: '', worsening: '', pain_level: '',
@@ -35,7 +35,7 @@ export default function App() {
   const handleAnalyze = async () => {
     setStep(8); setIsLoading(true); setError(null);
     try {
-      const response = await fetch(`${API_BASE}/analyze`, {
+      const response = await fetch(`${API_BASE}/api/analyze`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           duration: formData.duration, worsening: formData.worsening,
@@ -58,7 +58,7 @@ export default function App() {
     const userMsg = { role: 'user', content: chatInput };
     setChatHistory(prev => [...prev, userMsg]); setChatInput(''); setIsChatLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/chat`, {
+      const res = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMsg.content, history: chatHistory, groq_api_key: groqKey, analysis: analysisResult })
       });
