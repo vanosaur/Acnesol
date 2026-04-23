@@ -12,9 +12,6 @@ from PIL import Image
 
 # Import agent and tools
 from agent.graph import create_state, run_pipeline
-from tools.ml_tool import load_ml_model
-from tools.image_tool import load_cnn_model
-from tools.rag_tool import load_knowledge_base
 from groq import Groq
 
 app = FastAPI(title="AcneSol API Server")
@@ -27,6 +24,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def health_check():
+    return {"status": "healthy", "service": "AcneSol API"}
+
 # Global resources dictionary cache
 resources_cache = {
     "ml_model": None,
@@ -35,6 +36,11 @@ resources_cache = {
 }
 
 def get_resources():
+    # Lazy load heavy resources to speed up startup
+    from tools.ml_tool import load_ml_model
+    from tools.image_tool import load_cnn_model
+    from tools.rag_tool import load_knowledge_base
+    
     if resources_cache["knowledge_base"] is None:
         try:
             resources_cache["knowledge_base"] = load_knowledge_base("data/acne_knowledge.txt")
