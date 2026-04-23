@@ -16,8 +16,11 @@ def load_cnn_model(path: str = "models/acne_image_model.h5"):
     global _MODEL
     if _MODEL is None:
         import tensorflow as tf
-        print("Imported TensorFlow successfully")
-        _MODEL = tf.keras.models.load_model(path)
+        print("Importing TensorFlow...")
+        # Use compile=False to avoid version-specific deserialization errors
+        # We only need the model for inference (prediction), not training.
+        _MODEL = tf.keras.models.load_model(path, compile=False)
+        print("Model loaded successfully with compile=False")
     return _MODEL
 
 def predict_acne_type(model, pil_image: Image.Image):
