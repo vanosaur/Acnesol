@@ -12,7 +12,7 @@ from PIL import Image
 
 # Import agent and tools
 from agent.graph import create_state, run_pipeline
-from groq import Groq
+
 
 app = FastAPI(title="AcneSol API Server")
 
@@ -82,6 +82,7 @@ class ChatParams(BaseModel):
 
 @app.post("/api/analyze")
 async def analyze_skin(params: AnalyzeParams):
+    from groq import Groq
     api_key = params.groq_api_key or os.environ.get("GROQ_API_KEY")
     if not api_key:
         raise HTTPException(status_code=400, detail="Groq API Key is required (provide in request or backend .env)")
@@ -139,6 +140,7 @@ async def analyze_skin(params: AnalyzeParams):
 
 @app.post("/api/chat")
 async def chat(params: ChatParams):
+    from groq import Groq
     api_key = params.groq_api_key or os.environ.get("GROQ_API_KEY")
     if not api_key:
         raise HTTPException(status_code=400, detail="Groq API Key is required (provide in request or backend .env)")
