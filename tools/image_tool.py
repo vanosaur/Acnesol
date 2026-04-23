@@ -16,11 +16,19 @@ def load_cnn_model(path: str = "models/acne_image_model.h5"):
     global _MODEL
     if _MODEL is None:
         import tensorflow as tf
-        print("Importing TensorFlow...")
-        # Use compile=False to avoid version-specific deserialization errors
-        # We only need the model for inference (prediction), not training.
+        from tensorflow.keras.layers import InputLayer
+        
+        # Monkeypatch to handle Keras 2/3 version mismatch in model files
+        old_init = InputLayer.__init__
+        def new_init(self, *args, **kwargs):
+            kwargs.pop('batch_shape', None)
+            kwargs.pop('optional', None)
+            return old_init(self, *args, **kwargs)
+        InputLayer.__init__ = new_init
+
+        print("Importing TensorFlow with InputLayer patch...")
         _MODEL = tf.keras.models.load_model(path, compile=False)
-        print("Model loaded successfully with compile=False")
+        print("Model loaded successfully!")
     return _MODEL
 
 def predict_acne_type(model, pil_image: Image.Image):
