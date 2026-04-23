@@ -15,9 +15,9 @@ _MODEL = None
 def load_cnn_model(path: str = "models/acne_image_model.h5"):
     global _MODEL
     if _MODEL is None:
-        from keras.models import load_model
-        print("Imported Keras successfully")
-        _MODEL = load_model(path)
+        import tensorflow as tf
+        print("Imported TensorFlow successfully")
+        _MODEL = tf.keras.models.load_model(path)
     return _MODEL
 
 def predict_acne_type(model, pil_image: Image.Image):
