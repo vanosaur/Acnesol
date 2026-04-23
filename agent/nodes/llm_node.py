@@ -1,7 +1,7 @@
 from agent.state import PipelineState
-from groq import Groq
 
-def run_llm_node(state: PipelineState, client: Groq, analysis_history: list = None) -> PipelineState:
+def run_llm_node(state: PipelineState, client, analysis_history: list = None) -> PipelineState:
+    from groq import Groq
     # Build image info string
     if state.image_result and state.image_result != "Uncertain":
         img_info = f"{state.predicted_class} ({state.image_result}, confidence: {state.confidence_label})"

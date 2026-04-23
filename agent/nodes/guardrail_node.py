@@ -1,7 +1,6 @@
 from agent.state import PipelineState
-from groq import Groq
-
-def run_guardrail_node(state: PipelineState, client: Groq) -> PipelineState:
+def run_guardrail_node(state: PipelineState, client) -> PipelineState:
+    from groq import Groq
     # 1. Check if condition is extremely severe
     is_severe = "severe" in str(state.final_severity).lower()
     
