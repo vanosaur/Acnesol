@@ -82,14 +82,18 @@ class ChatParams(BaseModel):
 
 @app.post("/api/analyze")
 async def analyze_skin(params: AnalyzeParams):
-    from groq import Groq
     api_key = params.groq_api_key or os.environ.get("GROQ_API_KEY")
     if not api_key:
         raise HTTPException(status_code=400, detail="Groq API Key is required (provide in request or backend .env)")
-        
+    
     try:
+        from groq import Groq
         llm_client = Groq(api_key=api_key)
+    except ImportError as e:
+        print(f"CORTEX_DEBUG: ImportError for groq: {e}")
+        raise HTTPException(status_code=500, detail=f"Backend dependency error (groq): {e}")
     except Exception as e:
+        print(f"CORTEX_DEBUG: Groq init error: {e}")
         raise HTTPException(status_code=401, detail="Invalid Groq API Key")
 
     resources = get_resources()
