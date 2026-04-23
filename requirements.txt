@@ -1,5 +1,4 @@
-streamlit
-tensorflow
+tensorflow-cpu
 joblib
 numpy
 groq
@@ -11,3 +10,7 @@ uvicorn
 python-multipart
 pydantic
 python-dotenv
+sentence-transformers
+faiss-cpu
+langchain
+langchain-community
