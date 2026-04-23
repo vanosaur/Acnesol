@@ -36,27 +36,28 @@ resources_cache = {
 }
 
 def get_resources():
-    # Lazy load heavy resources to speed up startup
+    # Lazy load heavy resources to avoid blocking startup
     from tools.ml_tool import load_ml_model
     from tools.image_tool import load_cnn_model
     from tools.rag_tool import load_knowledge_base
     
     if resources_cache["knowledge_base"] is None:
-        try:
-            resources_cache["knowledge_base"] = load_knowledge_base("data/acne_knowledge.txt")
-        except Exception as e:
-            print("Failed to load KB", e)
+        try: resources_cache["knowledge_base"] = load_knowledge_base("data/acne_knowledge.txt")
+        except: pass
     if resources_cache["ml_model"] is None:
-        try:
-            resources_cache["ml_model"] = load_ml_model()
-        except:
-            pass
+        try: resources_cache["ml_model"] = load_ml_model()
+        except: pass
     if resources_cache["cnn_model"] is None:
-        try:
-            resources_cache["cnn_model"] = load_cnn_model()
-        except:
-            pass
+        try: resources_cache["cnn_model"] = load_cnn_model()
+        except: pass
     return resources_cache
+
+@app.on_event("startup")
+async def startup_event():
+    # Start pre-warming resources in a background thread so it doesn't block port binding
+    import threading
+    threading.Thread(target=get_resources, daemon=True).start()
+
 
 class AnalyzeParams(BaseModel):
     duration: str = ""

@@ -1,14 +1,18 @@
 import numpy as np
 
-# Try semantic search first, fall back to TF-IDF
+# Prefer TF-IDF for production to save memory (Render free tier)
 try:
-    from sentence_transformers import SentenceTransformer
-    import faiss
-    _RAG_MODE = "semantic"
-except ImportError:
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     _RAG_MODE = "tfidf"
+except ImportError:
+    # Fallback to semantic if sklearn is missing for some reason
+    try:
+        from sentence_transformers import SentenceTransformer
+        import faiss
+        _RAG_MODE = "semantic"
+    except ImportError:
+        _RAG_MODE = "none"
 
 class KnowledgeBase:
     """Lightweight knowledge base with semantic or TF-IDF retrieval."""
