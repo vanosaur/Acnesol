@@ -1,7 +1,7 @@
 from agent.state import PipelineState
-from tools.image_tool import predict_acne_type
-
 def run_image_node(state: PipelineState, model) -> PipelineState:
+    from tools.image_tool import predict_acne_type
+    
     if state.image is None:
         return state
 

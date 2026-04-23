@@ -1,7 +1,6 @@
 from agent.state import PipelineState
-from tools.rag_tool import KnowledgeBase
-
-def run_rag_node(state: PipelineState, kb: KnowledgeBase) -> PipelineState:
+def run_rag_node(state: PipelineState, kb) -> PipelineState:
+    from tools.rag_tool import KnowledgeBase
     # Combine final inferred state into a query
     base_severity = state.lifestyle_result
     img_severity = state.image_result or ""

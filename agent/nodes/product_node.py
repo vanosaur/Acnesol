@@ -1,7 +1,6 @@
 from agent.state import PipelineState
-from tools.search_tool import search_skincare_products
-
 def run_product_node(state: PipelineState) -> PipelineState:
+    from tools.search_tool import search_skincare_products
     # Build search query based on severity
     base_severity = state.lifestyle_result or "Mild"
     img_severity = state.image_result or ""
