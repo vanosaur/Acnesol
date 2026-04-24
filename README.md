@@ -63,5 +63,5 @@ AcneSol is built with a **decoupled architecture** for maximum stability:
 ---
 
 <p align="center">
-  Built with ❤️ by the AcneSol Team
+  Built with ❤️ by the me!
 </p>
