@@ -15,27 +15,14 @@ _MODEL = None
 def load_cnn_model(path: str = "models/final_model.keras"):
     global _MODEL
     if _MODEL is None:
-        import tensorflow as tf
-        from tensorflow.keras.layers import InputLayer, BatchNormalization
-        
-        # Monkeypatch to handle Keras 2/3 and version-specific mismatches
-        # This strips out 'renorm' and other keywords that cause deserialization errors
-        def patch_layer(layer_cls):
-            old_init = layer_cls.__init__
-            def new_init(self, *args, **kwargs):
-                # Keywords that frequently cause "Unrecognized keyword argument" errors
-                forbidden = ['batch_shape', 'optional', 'renorm', 'renorm_clipping', 'renorm_momentum', 'synchronized']
-                for key in forbidden:
-                    kwargs.pop(key, None)
-                return old_init(self, *args, **kwargs)
-            layer_cls.__init__ = new_init
-
-        patch_layer(InputLayer)
-        patch_layer(BatchNormalization)
-
-        print("Importing TensorFlow with resilient layer patches...")
-        # Use compile=False for faster inference-only loading
-        _MODEL = tf.keras.models.load_model(path, compile=False)
+        import keras
+        print("Importing Keras 3...")
+        # Use Keras 3 native loader
+        _MODEL = keras.models.load_model(
+            path, 
+            compile=False,
+            safe_mode=False
+        )
         print("Model loaded successfully!")
     return _MODEL
 
