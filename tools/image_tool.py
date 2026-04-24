@@ -12,18 +12,14 @@ severity_map = {
 
 _MODEL = None
 
-def load_cnn_model(path: str = "models/final_model.keras"):
+def load_cnn_model(path: str = "models/final_model.h5"):
     global _MODEL
     if _MODEL is None:
-        import keras
-        print("Importing Keras 3...")
-        # Use Keras 3 native loader
-        _MODEL = keras.models.load_model(
-            path, 
-            compile=False,
-            safe_mode=False
-        )
-        print("Model loaded successfully!")
+        from tensorflow.keras.models import load_model
+        print("Importing tensorflow.keras...")
+        # Use stable h5 loader
+        _MODEL = load_model(path, compile=False)
+        print("Model loaded successfully from .h5!")
     return _MODEL
 
 def predict_acne_type(model, pil_image: Image.Image):
