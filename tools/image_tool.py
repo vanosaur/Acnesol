@@ -12,14 +12,30 @@ severity_map = {
 
 _MODEL = None
 
-def load_cnn_model(path: str = "models/final_model.h5"):
+def build_model(num_classes: int = 5):
+    import tensorflow as tf
+    from tensorflow.keras.applications import MobileNetV2
+    from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout, BatchNormalization
+    from tensorflow.keras.models import Model
+
+    base_model = MobileNetV2(weights=None, include_top=False, input_shape=(224, 224, 3))
+    x = base_model.output
+    x = GlobalAveragePooling2D()(x)
+    x = BatchNormalization()(x)
+    x = Dense(128, activation='relu')(x)
+    x = Dropout(0.4)(x)
+    predictions = Dense(num_classes, activation='softmax')(x)
+    
+    return Model(inputs=base_model.input, outputs=predictions)
+
+def load_cnn_model(path: str = "models/model_weights.h5"):
     global _MODEL
     if _MODEL is None:
-        from tensorflow.keras.models import load_model
-        print("Importing tensorflow.keras...")
-        # Use stable h5 loader
-        _MODEL = load_model(path, compile=False)
-        print("Model loaded successfully from .h5!")
+        print("Rebuilding model architecture...")
+        _MODEL = build_model(num_classes=len(class_labels))
+        print(f"Loading weights from {path}...")
+        _MODEL.load_weights(path)
+        print("Model loaded successfully via weights!")
     return _MODEL
 
 def predict_acne_type(model, pil_image: Image.Image):
