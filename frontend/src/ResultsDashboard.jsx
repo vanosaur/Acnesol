@@ -1,5 +1,7 @@
-import React from 'react';
-import { MessageCircle, RefreshCw, Send, Zap, AlertTriangle, CheckCircle, ChevronLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { MessageCircle, RefreshCw, Send, Zap, AlertTriangle, CheckCircle, ChevronLeft, Pencil } from 'lucide-react';
+
+const ACNE_TYPES = ['Blackheads', 'Cyst', 'Papules', 'Pustules', 'Whiteheads'];
 
 function Metric({ label, value, highlight }) {
   return (
@@ -30,7 +32,8 @@ function TriggerBadge({ trigger }) {
   );
 }
 
-export default function ResultsDashboard({ result, chatHistory, chatInput, setChatInput, onChat, isChatLoading, scrollRef, onRestart, onBackToForm }) {
+export default function ResultsDashboard({ result, chatHistory, chatInput, setChatInput, onChat, isChatLoading, scrollRef, onRestart, onBackToForm, onOverrideType }) {
+  const [showOverride, setShowOverride] = useState(false);
   return (
     <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))',gap:'2rem',width:'100%',maxWidth:'1200px',alignItems:'start'}} className="p-mobile-0">
 
@@ -56,7 +59,35 @@ export default function ResultsDashboard({ result, chatHistory, chatInput, setCh
 
         {/* Metrics */}
         <div style={{gap:'10px',marginBottom:'1.5rem'}} className="grid-2 grid-2-mobile-1">
-          <Metric label="DETECTED TYPE" value={result.predicted_class}/>
+          <div style={{position:'relative'}}>
+            <Metric label="DETECTED TYPE" value={result.predicted_class}/>
+            <button 
+              onClick={() => setShowOverride(!showOverride)}
+              style={{position:'absolute', top:'8px', right:'8px', background:'rgba(74,153,223,0.1)', border:'none', color:'var(--primary)', cursor:'pointer', padding:'4px 8px', borderRadius:'8px', display:'flex', alignItems:'center', gap:'4px'}}
+              title="Not correct? Edit type"
+            >
+              <span style={{fontSize:'10px', fontWeight:800}}>EDIT</span>
+              <Pencil size={12}/>
+            </button>
+            
+            {showOverride && (
+              <div className="glass-panel" style={{position:'absolute', top:'100%', left:0, right:0, zIndex:10, marginTop:'8px', padding:'10px', boxShadow:'0 10px 25px rgba(0,0,0,0.1)'}}>
+                <p style={{fontSize:'11px', fontWeight:800, marginBottom:'8px', color:'var(--text-muted)'}}>SELECT CORRECT TYPE:</p>
+                <div style={{display:'flex', flexDirection:'column', gap:'4px'}}>
+                  {ACNE_TYPES.filter(t => t !== result.predicted_class).map(type => (
+                    <button 
+                      key={type}
+                      onClick={() => { onOverrideType(type); setShowOverride(false); }}
+                      className="btn-ghost"
+                      style={{justifyContent:'flex-start', padding:'6px 10px', fontSize:'13px', textAlign:'left'}}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
           <Metric label="IMAGE SEVERITY" value={result.image_severity}/>
           <Metric label="LIFESTYLE IMPACT" value={result.lifestyle} highlight/>
           <Metric label="PAIN LEVEL" value={result.pain_level}/>
