@@ -32,17 +32,17 @@ function TriggerBadge({ trigger }) {
 
 export default function ResultsDashboard({ result, chatHistory, chatInput, setChatInput, onChat, isChatLoading, scrollRef, onRestart, onBackToForm }) {
   return (
-    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(350px, 1fr))',gap:'2rem',width:'100%',maxWidth:'1200px',alignItems:'start'}}>
+    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))',gap:'2rem',width:'100%',maxWidth:'1200px',alignItems:'start'}} className="p-mobile-0">
 
       {/* Left panel */}
-      <div className="glass-panel" style={{padding:'2rem'}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.5rem'}}>
+      <div className="glass-panel p-8 p-mobile-6">
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'1.5rem'}} className="flex-col md:flex-row gap-4">
           <h2 style={{fontSize:'1.5rem'}}>Your Report</h2>
-          <div style={{display:'flex', gap:'8px'}}>
-            <button onClick={onBackToForm} className="btn-ghost" style={{fontSize:'11px', fontWeight:800, padding:'8px 12px', border:'1px solid var(--glass-border)', borderRadius:'12px'}}>
+          <div style={{display:'flex', gap:'8px'}} className="w-full md:w-auto">
+            <button onClick={onBackToForm} className="btn-ghost" style={{flex:1, fontSize:'11px', fontWeight:800, padding:'8px 12px', border:'1px solid var(--glass-border)', borderRadius:'12px'}}>
               <ChevronLeft size={14}/> BACK TO EDIT
             </button>
-            <button onClick={onRestart} className="btn-ghost" style={{fontSize:'11px', fontWeight:800, padding:'8px 12px', border:'1px solid var(--glass-border)', borderRadius:'12px', color:'var(--primary)'}}>
+            <button onClick={onRestart} className="btn-ghost" style={{flex:1, fontSize:'11px', fontWeight:800, padding:'8px 12px', border:'1px solid var(--glass-border)', borderRadius:'12px', color:'var(--primary)'}}>
               <RefreshCw size={14}/> START NEW
             </button>
           </div>
@@ -55,7 +55,7 @@ export default function ResultsDashboard({ result, chatHistory, chatInput, setCh
         <TriggerBadge trigger={result.main_trigger}/>
 
         {/* Metrics */}
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px',marginBottom:'1.5rem'}}>
+        <div style={{gap:'10px',marginBottom:'1.5rem'}} className="grid-2 grid-2-mobile-1">
           <Metric label="DETECTED TYPE" value={result.predicted_class}/>
           <Metric label="IMAGE SEVERITY" value={result.image_severity}/>
           <Metric label="LIFESTYLE IMPACT" value={result.lifestyle} highlight/>
@@ -80,7 +80,7 @@ export default function ResultsDashboard({ result, chatHistory, chatInput, setCh
       </div>
 
       {/* Chat panel */}
-      <div className="glass-panel" style={{height:'640px',display:'flex',flexDirection:'column',overflow:'hidden'}}>
+      <div className="glass-panel" style={{height:'min(640px, 80vh)',display:'flex',flexDirection:'column',overflow:'hidden'}}>
         <div style={{padding:'1.25rem 1.5rem',borderBottom:'1px solid var(--glass-border)',fontWeight:800,display:'flex',alignItems:'center',gap:'10px'}}>
           <MessageCircle size={18} style={{color:'var(--primary)'}}/> SKIN ADVISOR CHAT
         </div>

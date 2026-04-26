@@ -53,7 +53,10 @@ def predict_acne_type(model, pil_image: Image.Image):
 
     label = class_labels[class_index]
 
-    if confidence < 0.6:
+    if confidence < 0.35:
+        label = "Clear"
+        severity = "Healthy"
+    elif confidence < 0.6:
         severity = "Uncertain"
     else:
         severity = severity_map[label]

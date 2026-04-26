@@ -26,11 +26,11 @@ function OptionButton({ label, selected, onClick }) {
 
 function NavButtons({ onBack, onNext, nextDisabled, nextLabel = 'Continue' }) {
   return (
-    <div style={{marginTop: '2.5rem', display: 'flex', gap: '1rem'}}>
-      <button onClick={onBack} className="btn-ghost" style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+    <div style={{marginTop: '2.5rem', display: 'flex', gap: '1rem'}} className="flex-col md:flex-row">
+      <button onClick={onBack} className="btn-ghost" style={{display: 'flex', alignItems: 'center', gap: '4px', width:'100%', justifyContent:'center'}}>
         <ChevronLeft size={20}/> Back
       </button>
-      <button onClick={onNext} disabled={nextDisabled} className="btn-primary" style={{flex:1, justifyContent:'center'}}>
+      <button onClick={onNext} disabled={nextDisabled} className="btn-primary" style={{flex:1, justifyContent:'center', width:'100%'}}>
         {nextLabel} <ChevronRight size={20}/>
       </button>
     </div>
@@ -54,7 +54,7 @@ export default function ConsultationFlow({ step, setStep, formData, setFormData,
 
   return (
     <motion.div initial={{opacity:0,x:40}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-40}}
-      style={{maxWidth:'580px', width:'100%', padding:'2.5rem'}} className="glass-panel">
+      style={{maxWidth:'580px', width:'100%'}} className="glass-panel p-10 p-mobile-6">
 
       <div style={{fontSize:'11px',fontWeight:800,color:'var(--secondary)',letterSpacing:'0.1em',marginBottom:'8px'}}>{info.section}</div>
       <h2 style={{marginBottom:'0.5rem'}}>{info.title}</h2>
@@ -65,9 +65,9 @@ export default function ConsultationFlow({ step, setStep, formData, setFormData,
       {step === 1 && (
         <>
           <p style={{fontSize:'14px',color:'var(--text-muted)',marginBottom:'1.5rem'}}>Upload a clear photo of the concerned skin area. Use good lighting for better analysis.</p>
-          <div style={{position:'relative',border:'2px dashed var(--glass-border)',borderRadius:'24px',padding:'3rem',textAlign:'center',background: formData.image ? 'rgba(74,153,223,0.05)' : 'white'}}>
+          <div style={{position:'relative',border:'2px dashed var(--glass-border)',borderRadius:'24px',padding:'3rem',textAlign:'center',background: formData.image ? 'rgba(74,153,223,0.05)' : 'white'}} className="p-mobile-6">
             {formData.image
-              ? <img src={formData.image} style={{maxHeight:'280px',borderRadius:'16px',boxShadow:'0 10px 30px rgba(0,0,0,0.1)'}} alt="Skin Preview"/>
+              ? <img src={formData.image} style={{maxHeight:'240px', maxWidth:'100%', borderRadius:'16px',boxShadow:'0 10px 30px rgba(0,0,0,0.1)'}} alt="Skin Preview"/>
               : <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'1rem'}}>
                   <div style={{width:'64px',height:'64px',background:'rgba(74,153,223,0.1)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--primary)'}}><Upload size={32}/></div>
                   <p style={{fontWeight:700}}>Upload Photo</p>

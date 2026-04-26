@@ -34,6 +34,7 @@ def _get_trigger(state: PipelineState) -> str:
 
 def run_lifestyle_node(state: PipelineState, model) -> PipelineState:
     # Start from image model severity as primary signal
+    # If image_result is "Healthy", we want to keep it unless lifestyle factors are very high
     base_severity = state.image_result or "Mild"
 
     # Apply refined escalation

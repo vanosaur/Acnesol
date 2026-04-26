@@ -79,16 +79,15 @@ export default function App() {
 
   return (
     <div id="root">
-      <nav className="p-6 flex justify-between items-center" style={{zIndex: 100}}>
+      <nav className="p-6 px-10 flex justify-between items-center px-mobile-4" style={{zIndex: 100}}>
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setStep(0)}>
           <div className="nav-logo-box"><Sparkles size={20} /></div>
-          <span style={{fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em'}}>AcneSol</span>
-          <span style={{fontSize: '10px', padding: '4px 10px', background: 'rgba(146,191,232,0.15)', borderRadius: '20px', color: 'var(--primary)', fontWeight: 700, border: '1px solid rgba(146,191,232,0.2)'}}>AI SKINCARE</span>
+          <span style={{fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em'}} className="hidden-mobile">AcneSol</span>
         </div>
         <div className="flex items-center gap-4">
           {showGroqInput ? (
             <div style={{display:'flex', background:'rgba(255,255,255,0.5)', border:'1px solid var(--glass-border)', padding:'4px 12px', borderRadius:'40px', alignItems:'center', gap:'8px'}}>
-              <input type="password" placeholder="Groq API Key (Optional)..." style={{background:'transparent',border:'none',outline:'none',fontSize:'12px',width:'150px'}} value={groqKey} onChange={e => setGroqKey(e.target.value)} />
+              <input type="password" placeholder="API Key..." style={{background:'transparent',border:'none',outline:'none',fontSize:'12px',width:'80px'}} value={groqKey} onChange={e => setGroqKey(e.target.value)} />
               <button onClick={() => setShowGroqInput(false)} style={{background:'none',border:'none',color:'var(--primary)',cursor:'pointer'}}><ShieldCheck size={16}/></button>
             </div>
           ) : (
@@ -97,7 +96,7 @@ export default function App() {
         </div>
       </nav>
 
-      <main className="flex-1 container py-12 flex items-center justify-center" style={{paddingTop:'2rem'}}>
+      <main className="flex-1 container py-12 flex items-center justify-center p-mobile-4" style={{paddingTop:'1rem'}}>
         <AnimatePresence mode="wait">
           {step === 0 && <LandingPage key="landing" onStart={() => setStep(1)} />}
           {step >= 1 && step <= 7 && (
@@ -121,12 +120,12 @@ export default function App() {
 
 function LandingPage({ onStart }) {
   return (
-    <motion.div initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-30}} className="max-w-4xl text-center">
-      <div style={{display:'inline-flex',alignItems:'center',gap:'8px',background:'rgba(74,153,223,0.1)',border:'1px solid rgba(74,153,223,0.2)',padding:'6px 16px',borderRadius:'30px',marginBottom:'2rem'}}>
-        <Activity size={14} style={{color:'var(--primary)'}}/><span style={{fontSize:'11px',fontWeight:800,letterSpacing:'0.05em',color:'var(--primary)'}}>SKIN INTELLIGENCE ENGINE</span>
+    <motion.div initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-30}} className="max-w-4xl text-center px-mobile-4">
+      <div style={{display:'inline-flex',alignItems:'center',gap:'8px',background:'rgba(74,153,223,0.1)',border:'1px solid rgba(74,153,223,0.2)',padding:'6px 16px',borderRadius:'30px',marginBottom:'1.5rem'}}>
+        <Activity size={14} style={{color:'var(--primary)'}}/><span style={{fontSize:'10px',fontWeight:800,letterSpacing:'0.05em',color:'var(--primary)'}}>SKIN INTELLIGENCE ENGINE</span>
       </div>
       <h1>Your AI Partner for <span className="text-gradient">Clear Skin</span></h1>
-      <p className="description">AcneSol runs a guided, clinical-style consultation combining image AI with your personal skin history to deliver highly personalized advice.</p>
+      <p className="description" style={{marginTop:'1rem', marginBottom:'2rem'}}>AcneSol runs a guided, clinical-style consultation combining image AI with your skin history.</p>
       <button onClick={onStart} className="btn-primary" style={{margin:'0 auto'}}>Start Consultation <ChevronRight size={20}/></button>
     </motion.div>
   );

@@ -3,7 +3,9 @@ from agent.state import PipelineState
 def run_llm_node(state: PipelineState, client, analysis_history: list = None) -> PipelineState:
     from groq import Groq
     # Build image info string
-    if state.image_result and state.image_result != "Uncertain":
+    if state.image_result == "Healthy":
+        img_info = "No significant acne detected (Healthy skin)"
+    elif state.image_result and state.image_result != "Uncertain":
         img_info = f"{state.predicted_class} ({state.image_result}, confidence: {state.confidence_label})"
     elif state.image_result == "Uncertain":
         img_info = f"{state.predicted_class} (confidence too low to determine severity)"
@@ -47,6 +49,7 @@ USER CONSULTATION SUMMARY:
 {consultation}
 
 STRICT ADVICE GUIDELINES BASED ON SEVERITY ({state.lifestyle_result}):
+0. HEALTHY / CLEAR: Congratulate the user on their clear skin! Focus on maintenance, SPF, and gentle hydration. No strong actives needed.
 1. MILD: Focus on gentle cleansing, non-comedogenic hydration, and preventive care. Suggest one mild active like 2% Salicylic Acid or Niacinamide.
 2. MODERATE: Focus on targeted treatment of active lesions. Suggest stronger actives like Benzoyl Peroxide or Adapalene (mention starting slowly). Emphasize barrier repair.
 3. SEVERE: Prioritize inflammation reduction and avoiding scarring. Recommend extremely gentle, fragrance-free products. Your primary advice must be a dermatologist consultation for prescription care.
