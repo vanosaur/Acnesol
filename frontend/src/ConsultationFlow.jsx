@@ -218,7 +218,7 @@ export default function ConsultationFlow({ step, setStep, formData, setFormData,
               <OptionButton key={opt} label={opt} selected={formData.sleep_change===opt} onClick={() => upd('sleep_change', opt)}/>
             ))}
           </div>
-          <NavButtons onBack={() => setStep(6)} onNext={onAnalyze} nextDisabled={!formData.stress_change || !formData.sleep_change} nextLabel="Analyze My Skin"/>
+          <NavButtons onBack={() => setStep(6)} onNext={() => onAnalyze()} nextDisabled={!formData.stress_change || !formData.sleep_change} nextLabel="Analyze My Skin"/>
         </>
       )}
     </motion.div>
