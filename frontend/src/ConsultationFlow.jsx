@@ -38,13 +38,18 @@ function NavButtons({ onBack, onNext, nextDisabled, nextLabel = 'Continue' }) {
 }
 
 export default function ConsultationFlow({ step, setStep, formData, setFormData, onAnalyze, error }) {
+  const [isImageLoading, setIsImageLoading] = React.useState(false);
   const upd = (key, val) => setFormData(f => ({...f, [key]: val}));
 
   const handleFile = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setIsImageLoading(true);
       const reader = new FileReader();
-      reader.onloadend = () => upd('imageBase64', reader.result);
+      reader.onloadend = () => {
+        upd('imageBase64', reader.result);
+        setIsImageLoading(false);
+      };
       upd('image', URL.createObjectURL(file));
       reader.readAsDataURL(file);
     }
@@ -65,17 +70,23 @@ export default function ConsultationFlow({ step, setStep, formData, setFormData,
       {step === 1 && (
         <>
           <p style={{fontSize:'14px',color:'var(--text-muted)',marginBottom:'1.5rem'}}>Upload a clear photo of the concerned skin area. Use good lighting for better analysis.</p>
-          <div style={{position:'relative',border:'2px dashed var(--glass-border)',borderRadius:'24px',padding:'3rem',textAlign:'center',background: formData.image ? 'rgba(74,153,223,0.05)' : 'white'}} className="p-mobile-6">
-            {formData.image
-              ? <img src={formData.image} style={{maxHeight:'240px', maxWidth:'100%', borderRadius:'16px',boxShadow:'0 10px 30px rgba(0,0,0,0.1)'}} alt="Skin Preview"/>
-              : <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'1rem'}}>
+          <label htmlFor="skin-upload" style={{display:'block', position:'relative',border:'2px dashed var(--glass-border)',borderRadius:'24px',padding:'3rem',textAlign:'center',background: formData.image ? 'rgba(74,153,223,0.05)' : 'white', cursor:'pointer'}} className="p-mobile-6">
+            {isImageLoading ? (
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'1rem'}}>
+                <div style={{width:'40px',height:'40px',border:'3px solid rgba(74,153,223,0.2)',borderTopColor:'var(--primary)',borderRadius:'50%',animation:'spin 1s linear infinite'}}></div>
+                <p style={{fontSize:'14px',fontWeight:700,color:'var(--primary)'}}>Processing Image...</p>
+              </div>
+            ) : formData.image ? (
+              <img src={formData.image} style={{maxHeight:'240px', maxWidth:'100%', borderRadius:'16px',boxShadow:'0 10px 30px rgba(0,0,0,0.1)', objectFit:'contain'}} alt="Skin Preview"/>
+            ) : (
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'1rem'}}>
                   <div style={{width:'64px',height:'64px',background:'rgba(74,153,223,0.1)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--primary)'}}><Upload size={32}/></div>
                   <p style={{fontWeight:700}}>Upload Photo</p>
                   <p style={{fontSize:'12px',color:'var(--text-light)'}}>JPG, PNG — use clear lighting</p>
-                </div>
-            }
-            <input type="file" accept="image/*" onChange={handleFile} style={{position:'absolute',inset:0,opacity:0,cursor:'pointer'}}/>
-          </div>
+              </div>
+            )}
+            <input id="skin-upload" type="file" accept="image/*" onChange={handleFile} style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',whiteSpace:'nowrap',border:0}}/>
+          </label>
           <NavButtons onBack={() => setStep(0)} onNext={() => setStep(2)} nextDisabled={!formData.image} nextLabel="Next"/>
         </>
       )}
