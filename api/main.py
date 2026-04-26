@@ -69,6 +69,7 @@ class AnalyzeParams(BaseModel):
     sleep_change: str = ""
     image_base64: Optional[str] = None
     groq_api_key: Optional[str] = None
+    manual_type_override: Optional[str] = None
 
 class ChatMessage(BaseModel):
     role: str
@@ -117,7 +118,8 @@ async def analyze_skin(params: AnalyzeParams):
             stress_change=params.stress_change,
             sleep_change=params.sleep_change,
             image=image,
-            image_base64=params.image_base64
+            image_base64=params.image_base64,
+            manual_type_override=params.manual_type_override
         )
         
         # run pipeline
@@ -129,6 +131,7 @@ async def analyze_skin(params: AnalyzeParams):
             "lifestyle": getattr(final_state, 'lifestyle_result', "N/A"),
             "image_severity": getattr(final_state, 'image_result', "N/A"),
             "predicted_class": getattr(final_state, 'predicted_class', "N/A"),
+            "all_predictions": getattr(final_state, 'all_predictions', {}),
             "confidence_label": getattr(final_state, 'confidence_label', "N/A"),
             "main_trigger": getattr(final_state, 'main_trigger', "N/A"),
             "products": products_str,

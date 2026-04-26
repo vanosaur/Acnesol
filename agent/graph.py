@@ -18,7 +18,8 @@ def create_state(
     stress_change: str = "",
     sleep_change: str = "",
     image: Optional[Image.Image] = None,
-    image_base64: Optional[str] = None
+    image_base64: Optional[str] = None,
+    manual_type_override: Optional[str] = None
 ) -> PipelineState:
     """Factory to initialize the pipeline state from user inputs."""
     return PipelineState(
@@ -30,7 +31,8 @@ def create_state(
         stress_change=stress_change,
         sleep_change=sleep_change,
         image=image,
-        image_base64=image_base64
+        image_base64=image_base64,
+        manual_type_override=manual_type_override
     )
 
 def run_pipeline(state: PipelineState, resources: Dict[str, Any], analysis_history: list = None) -> PipelineState:

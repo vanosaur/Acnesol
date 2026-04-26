@@ -71,7 +71,22 @@ export default function ResultsDashboard({ result, chatHistory, chatInput, setCh
             </button>
             
             {showOverride && (
-              <div className="glass-panel" style={{position:'absolute', top:'100%', left:0, right:0, zIndex:10, marginTop:'8px', padding:'10px', boxShadow:'0 10px 25px rgba(0,0,0,0.1)'}}>
+              <div style={{
+                position:'absolute', 
+                top:'100%', 
+                left:0, 
+                right:0, 
+                zIndex:100, 
+                marginTop:'8px', 
+                padding:'12px', 
+                background:'#ffffff', 
+                borderRadius:'16px', 
+                boxShadow:'0 15px 35px rgba(0,0,0,0.2)',
+                border:'1px solid var(--glass-border)',
+                display:'flex',
+                flexDirection:'column',
+                gap:'4px'
+              }}>
                 <p style={{fontSize:'11px', fontWeight:800, marginBottom:'8px', color:'var(--text-muted)'}}>SELECT CORRECT TYPE:</p>
                 <div style={{display:'flex', flexDirection:'column', gap:'4px'}}>
                   {ACNE_TYPES.filter(t => t !== result.predicted_class).map(type => (
@@ -79,7 +94,7 @@ export default function ResultsDashboard({ result, chatHistory, chatInput, setCh
                       key={type}
                       onClick={() => { onOverrideType(type); setShowOverride(false); }}
                       className="btn-ghost"
-                      style={{justifyContent:'flex-start', padding:'6px 10px', fontSize:'13px', textAlign:'left'}}
+                      style={{justifyContent:'flex-start', padding:'8px 12px', fontSize:'13px', textAlign:'left', color:'var(--text-main)', borderRadius:'8px'}}
                     >
                       {type}
                     </button>

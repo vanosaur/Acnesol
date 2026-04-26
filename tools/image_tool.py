@@ -52,6 +52,7 @@ def predict_acne_type(model, pil_image: Image.Image):
     confidence = float(pred_img[class_index])
 
     label = class_labels[class_index]
+    all_scores = {class_labels[i]: float(pred_img[i]) for i in range(len(class_labels))}
 
     if confidence < 0.35:
         label = "Clear"
@@ -61,4 +62,4 @@ def predict_acne_type(model, pil_image: Image.Image):
     else:
         severity = severity_map[label]
 
-    return label, severity, confidence
+    return label, severity, confidence, all_scores

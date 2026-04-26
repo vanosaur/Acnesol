@@ -14,11 +14,13 @@ class PipelineState:
     sleep_change: str = ""
     image: Optional[Image.Image] = None
     image_base64: Optional[str] = None
+    manual_type_override: Optional[str] = None
 
     # Intermediate results
     predicted_class: Optional[str] = None   # from image model
     image_result: Optional[str] = None      # severity from image model
     image_confidence: Optional[float] = None # raw confidence score
+    all_predictions: dict = field(default_factory=dict)
     confidence_label: Optional[str] = None  # High / Medium / Low
     lifestyle_result: Optional[str] = None  # adjusted severity
     main_trigger: Optional[str] = None      # single prioritized trigger

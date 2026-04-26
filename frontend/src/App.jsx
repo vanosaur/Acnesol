@@ -32,7 +32,7 @@ export default function App() {
   useEffect(() => { if (analysisResult) sessionStorage.setItem('acnesol_analysisResult', JSON.stringify(analysisResult)); }, [analysisResult]);
   useEffect(() => sessionStorage.setItem('acnesol_chatHistory', JSON.stringify(chatHistory)), [chatHistory]);
 
-  const handleAnalyze = async () => {
+  const handleAnalyze = async (manualType = null) => {
     setStep(8); setIsLoading(true); setError(null);
     try {
       const response = await fetch(`${API_BASE}/api/analyze`, {
@@ -42,7 +42,8 @@ export default function App() {
           pain_level: formData.pain_level, skincare_routine: formData.skincare_routine,
           new_products: formData.new_products, stress_change: formData.stress_change,
           sleep_change: formData.sleep_change, image_base64: formData.imageBase64,
-          groq_api_key: groqKey
+          groq_api_key: groqKey,
+          manual_type_override: manualType
         })
       });
       const data = await response.json();
@@ -104,7 +105,7 @@ export default function App() {
           )}
           {step === 8 && <AnalyzingState key="analyzing" />}
           {step === 9 && (
-            <ResultsDashboard key="results" result={analysisResult} chatHistory={chatHistory} chatInput={chatInput} setChatInput={setChatInput} onChat={handleChat} isChatLoading={isChatLoading} scrollRef={scrollRef} onRestart={handleRestart} onBackToForm={handleBackToForm} />
+            <ResultsDashboard key="results" result={analysisResult} chatHistory={chatHistory} chatInput={chatInput} setChatInput={setChatInput} onChat={handleChat} isChatLoading={isChatLoading} scrollRef={scrollRef} onRestart={handleRestart} onBackToForm={handleBackToForm} onOverrideType={handleAnalyze} />
           )}
         </AnimatePresence>
       </main>
