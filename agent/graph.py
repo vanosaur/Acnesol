@@ -36,11 +36,11 @@ def create_state(
 def run_pipeline(state: PipelineState, resources: Dict[str, Any], analysis_history: list = None) -> PipelineState:
     """Orchestrates the pipeline execution."""
     
-    # Node 1: Extract lifestyle prediction
-    state = run_lifestyle_node(state, resources["ml_model"])
-    
-    # Node 2: Extract image prediction (if available)
+    # Node 1: Extract image prediction (if available)
     state = run_image_node(state, resources["cnn_model"])
+    
+    # Node 2: Extract lifestyle prediction (depends on image result)
+    state = run_lifestyle_node(state, resources["ml_model"])
     
     # Node 3: Retrieve relevant knowledge
     state = run_rag_node(state, resources["knowledge_base"])
