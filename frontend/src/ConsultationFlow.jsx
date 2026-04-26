@@ -43,16 +43,47 @@ export default function ConsultationFlow({ step, setStep, formData, setFormData,
 
   const handleFile = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setIsImageLoading(true);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        upd('imageBase64', reader.result);
+    if (!file) return;
+
+    // Show preview immediately using Blob URL
+    const blobUrl = URL.createObjectURL(file);
+    upd('image', blobUrl);
+    setIsImageLoading(true);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_SIDE = 1000;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_SIDE) {
+            height *= MAX_SIDE / width;
+            width = MAX_SIDE;
+          }
+        } else {
+          if (height > MAX_SIDE) {
+            width *= MAX_SIDE / height;
+            height = MAX_SIDE;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        upd('imageBase64', dataUrl);
         setIsImageLoading(false);
       };
-      upd('image', URL.createObjectURL(file));
-      reader.readAsDataURL(file);
-    }
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
   };
 
   const info = STEPS.find(s => s.id === step) || STEPS[0];
@@ -70,21 +101,37 @@ export default function ConsultationFlow({ step, setStep, formData, setFormData,
       {step === 1 && (
         <>
           <p style={{fontSize:'14px',color:'var(--text-muted)',marginBottom:'1.5rem'}}>Upload a clear photo of the concerned skin area. Use good lighting for better analysis.</p>
-          <label htmlFor="skin-upload" style={{display:'block', position:'relative',border:'2px dashed var(--glass-border)',borderRadius:'24px',padding:'3rem',textAlign:'center',background: formData.image ? 'rgba(74,153,223,0.05)' : 'white', cursor:'pointer'}} className="p-mobile-6">
-            {isImageLoading ? (
-              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'1rem'}}>
-                <div style={{width:'40px',height:'40px',border:'3px solid rgba(74,153,223,0.2)',borderTopColor:'var(--primary)',borderRadius:'50%',animation:'spin 1s linear infinite'}}></div>
-                <p style={{fontSize:'14px',fontWeight:700,color:'var(--primary)'}}>Processing Image...</p>
-              </div>
-            ) : formData.image ? (
-              <img src={formData.image} style={{maxHeight:'240px', maxWidth:'100%', borderRadius:'16px',boxShadow:'0 10px 30px rgba(0,0,0,0.1)', objectFit:'contain'}} alt="Skin Preview"/>
-            ) : (
-              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'1rem'}}>
-                  <div style={{width:'64px',height:'64px',background:'rgba(74,153,223,0.1)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--primary)'}}><Upload size={32}/></div>
-                  <p style={{fontWeight:700}}>Upload Photo</p>
-                  <p style={{fontSize:'12px',color:'var(--text-light)'}}>JPG, PNG — use clear lighting</p>
+          <label htmlFor="skin-upload" style={{display:'block', position:'relative',border:'2px dashed var(--glass-border)',borderRadius:'24px',padding:'1.5rem',textAlign:'center',background: formData.image ? 'rgba(74,153,223,0.05)' : 'white', cursor:'pointer', minHeight:'200px', display:'flex', alignItems:'center', justifyContent:'center'}} className="p-mobile-6">
+            
+            {formData.image && (
+              <div style={{position:'relative', width:'100%'}}>
+                <img src={formData.image} style={{maxHeight:'320px', maxWidth:'100%', borderRadius:'16px',boxShadow:'0 10px 30px rgba(0,0,0,0.1)', objectFit:'contain'}} alt="Skin Preview"/>
+                {isImageLoading && (
+                  <div style={{position:'absolute', inset:0, background:'rgba(255,255,255,0.7)', borderRadius:'16px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'0.5rem', backdropFilter:'blur(4px)'}}>
+                    <div style={{width:'24px',height:'24px',border:'2px solid rgba(74,153,223,0.2)',borderTopColor:'var(--primary)',borderRadius:'50%',animation:'spin 1s linear infinite'}}></div>
+                    <span style={{fontSize:'11px', fontWeight:800, color:'var(--primary)'}}>OPTIMIZING...</span>
+                  </div>
+                )}
               </div>
             )}
+
+            {!formData.image && (
+              <>
+                {isImageLoading ? (
+                  <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'1rem'}}>
+                    <div style={{width:'40px',height:'40px',border:'3px solid rgba(74,153,223,0.2)',borderTopColor:'var(--primary)',borderRadius:'50%',animation:'spin 1s linear infinite'}}></div>
+                    <p style={{fontSize:'14px',fontWeight:700,color:'var(--primary)'}}>Processing Image...</p>
+                  </div>
+                ) : (
+                  <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'1rem'}}>
+                      <div style={{width:'64px',height:'64px',background:'rgba(74,153,223,0.1)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--primary)'}}><Upload size={32}/></div>
+                      <p style={{fontWeight:700}}>Upload Photo</p>
+                      <p style={{fontSize:'12px',color:'var(--text-light)'}}>Click to take a photo or upload</p>
+                  </div>
+                )}
+              </>
+            )}
+
             <input id="skin-upload" type="file" accept="image/*" onChange={handleFile} style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',whiteSpace:'nowrap',border:0}}/>
           </label>
           <NavButtons onBack={() => setStep(0)} onNext={() => setStep(2)} nextDisabled={!formData.image} nextLabel="Next"/>
