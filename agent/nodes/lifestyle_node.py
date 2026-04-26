@@ -39,6 +39,7 @@ def run_lifestyle_node(state: PipelineState, model) -> PipelineState:
 
     # Apply refined escalation
     adjusted = _escalate(base_severity, state.worsening, state.pain_level)
+    print(f"DEBUG: Lifestyle Node - Base: {base_severity}, Result: {adjusted}")
 
     state.lifestyle_result = adjusted
     state.main_trigger = _get_trigger(state)
