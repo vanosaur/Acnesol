@@ -1,67 +1,181 @@
-# 🌟 AcneSol: Intelligent AI Dermatology Assistant
+# AcneSol — Your AI-Powered Dermatology Assistant
 
-**AcneSol** is a full-stack, AI-powered skincare consultation platform designed to provide professional-grade dermatology insights from the comfort of home. By combining computer vision (TensorFlow) with advanced LLM reasoning (Groq/Llama 3), AcneSol analyzes skin conditions and lifestyle factors to generate highly personalized skincare routines.
+AcneSol is an intelligent full-stack skincare consultation platform that analyzes facial images and lifestyle factors to generate highly personalized skincare routines. By combining computer vision, retrieval-augmented generation (RAG), and large language models, AcneSol provides evidence-based recommendations tailored to each user's acne type, severity, and daily habits.
 
----
+## Overview
 
-## ✨ Key Features
+AcneSol integrates multiple AI components to simulate a structured dermatology consultation.
 
-- **📸 Dual-Stream Analysis**: Combines high-accuracy image classification (MobileNetV2) with a clinical-style lifestyle consultation.
-- **🧠 Personalized Routines**: Generates unique Morning and Night routines tailored specifically to the user's acne type (Blackheads, Pustules, Cysts, etc.) and severity level.
-- **🔍 RAG-Powered Insights**: Uses Retrieval Augmented Generation (RAG) to pull evidence-based advice from a curated dermatology knowledge base.
-- **💬 AI Chat Assistant**: After analysis, users can chat with "AcneSol" to ask follow-up questions about their routine or specific ingredients.
-- **🎨 Premium UI/UX**: A modern, glassmorphic React interface featuring smooth animations (Framer Motion) and a responsive multi-step consultation flow.
+The system performs the following tasks:
 
----
+1. Analyzes facial images using a custom-trained MobileNetV2 model.
+2. Detects acne type and severity (such as Blackheads, Papules, Pustules, and Cystic Acne).
+3. Collects lifestyle information including sleep, stress, diet, and skincare habits.
+4. Retrieves evidence-based dermatology knowledge using TF-IDF and cosine similarity.
+5. Generates personalized morning and night skincare routines.
+6. Recommends suitable ingredients and products.
+7. Provides a conversational AI assistant for follow-up questions.
+8. Presents all results through a modern and responsive web interface.
 
-## 🛠 Tech Stack
-
-### Backend (The Brain)
-- **FastAPI**: High-performance Python web framework.
-- **TensorFlow (CPU)**: Custom-trained MobileNetV2 for localized skin condition detection.
-- **Groq SDK**: Ultra-fast inference using Llama 3.3 for personalized consultation text.
-- **Scikit-Learn (TF-IDF)**: Memory-efficient RAG implementation optimized for low-resource environments (Render Free Tier).
-
-### Frontend (The Face)
-- **React 18 + Vite**: Lightning-fast frontend development and build.
-- **Tailwind CSS**: Modern utility-first styling.
-- **Framer Motion**: Fluid UI transitions and micro-animations.
-- **Lucide React**: Beautiful, consistent iconography.
+The application combines traditional machine learning, deep learning, and generative AI to deliver professional-grade skincare guidance from home.
 
 ---
 
-## 🚀 Deployment & Infrastructure
+## Features
 
-AcneSol is built with a **decoupled architecture** for maximum stability:
-
-- **Backend**: Hosted on **Render** (Python 3.10). Optimized with a "Weights-Only" loading strategy to bypass Keras version conflicts and fit within the 512MB RAM limit.
-- **Frontend**: Hosted on **Vercel**. Communicates with the Render API via dynamic environment variables.
+- Facial image analysis using MobileNetV2 and TensorFlow
+- Acne type and severity classification
+- Lifestyle-based consultation questionnaire
+- Retrieval-augmented generation using TF-IDF
+- Personalized morning and night routines
+- Ingredient and product recommendations
+- Conversational follow-up assistant
+- Interactive React-based user interface
+- Responsive design with animations and glassmorphism
 
 ---
 
-## 💻 Local Setup
+## Technology Stack
 
-### Backend
-1. Navigate to the root directory.
-2. Create a virtual environment: `python -m venv venv`
-3. Install dependencies: `pip install -r requirements.txt`
-4. Add your `GROQ_API_KEY` to a `.env` file.
-5. Start the server: `uvicorn api.main:app --reload`
+### Backend and AI
+
+- Python
+- FastAPI
+- TensorFlow
+- Keras
+- MobileNetV2
+- Groq SDK
+- Llama 3.3 70B
+- Scikit-learn
+- TF-IDF Vectorizer
+- Pillow
 
 ### Frontend
-1. Navigate to `cd frontend`.
-2. Install dependencies: `npm install`
-3. Create a `.env` file and set `VITE_API_URL=http://localhost:8000`.
-4. Start the dev server: `npm run dev`
+
+- React 18
+- Vite
+- Tailwind CSS
+- Framer Motion
+- Lucide React
 
 ---
 
-## ⚠️ Medical Disclaimer
+## System Architecture
 
-*AcneSol is an AI-powered educational tool and does not provide medical diagnoses. Always consult with a board-certified dermatologist for persistent or severe skin conditions. The routines provided are for informational purposes only.*
+```text
+User Uploads Image and Answers Lifestyle Questions
+                        ↓
+                  React Frontend
+                        ↓
+                 FastAPI Backend
+                        ↓
+           Image Preprocessing (Pillow)
+                        ↓
+       MobileNetV2 Acne Classification Model
+                        ↓
+     Lifestyle Response Normalization
+                        ↓
+    TF-IDF Knowledge Retrieval (RAG)
+                        ↓
+     Llama 3 Personalized Reasoning
+                        ↓
+       Structured JSON Response
+                        ↓
+        Results Dashboard + AI Chat
+```
+
+## Core AI Components
+
+### Computer Vision Model
+
+A MobileNetV2 convolutional neural network analyzes uploaded facial images and predicts acne type and severity.
+
+### Retrieval-Augmented Generation
+
+A TF-IDF-based retriever searches a curated dermatology knowledge base for relevant evidence and treatment guidance.
+
+### Large Language Model
+
+Llama 3.3, accessed through the Groq API, combines image predictions, retrieved knowledge, and lifestyle data to generate personalized skincare recommendations.
 
 ---
 
-<p align="center">
-  Built with ❤️ by the me!
-</p>
+## Personalized Consultation Workflow
+
+1. The user uploads a facial image.
+2. The user answers a structured lifestyle questionnaire.
+3. The frontend sends all data to the FastAPI backend.
+4. The image is resized and normalized using Pillow.
+5. MobileNetV2 predicts the acne condition and confidence score.
+6. TF-IDF retrieves relevant dermatology content.
+7. Llama 3 generates a detailed skincare routine.
+8. The backend returns a structured JSON response.
+9. The frontend displays routines, recommendations, and supporting explanations.
+10. The user can ask follow-up questions through the AI chat assistant.
+
+---
+
+## Deployment
+
+AcneSol uses a decoupled deployment architecture.
+
+- Backend deployed on Render
+- Frontend deployed on Vercel
+- Environment variables used for API configuration
+- Memory-optimized model loading for low-resource hosting
+
+---
+
+## Performance Optimizations
+
+- Lazy loading for frontend pages and components
+- Weights-only model loading to reduce RAM usage
+- TF-IDF retrieval for lightweight RAG
+- Dynamic API URLs using environment variables
+- Cached model and retriever initialization
+
+---
+
+## Project Structure
+
+```text
+AcneSol/
+├── api/                 # FastAPI application and endpoints
+├── models/              # Trained MobileNetV2 model files
+├── rag/                 # TF-IDF knowledge base and retrieval logic
+├── services/            # LLM and recommendation services
+├── frontend/            # React application
+├── assets/              # Images and static resources
+├── requirements.txt     # Python dependencies
+└── README.md
+
+```
+
+
+## Limitations
+
+- The system provides educational guidance, not medical diagnosis.
+- Results depend on image quality, lighting, and user responses.
+- Recommendations may not replace professional dermatological consultation.
+
+---
+
+## Future Improvements
+
+- Support for additional skin conditions
+- Multi-language recommendations
+- Progress tracking and routine history
+- Ingredient compatibility analysis
+- Mobile application support
+
+---
+
+## Medical Disclaimer
+
+AcneSol is an AI-powered educational tool and does not provide medical diagnosis or treatment. Users should consult a qualified dermatologist for persistent or severe skin concerns.
+
+---
+
+## Author
+
+❤️ Built by Vani Rudra.
