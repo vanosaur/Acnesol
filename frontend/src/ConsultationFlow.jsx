@@ -3,13 +3,14 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Upload } from 'lucide-react';
 
 const STEPS = [
-  { id: 1, section: 'STEP 01 / 07', title: 'Skin Scan' },
-  { id: 2, section: 'STEP 02 / 07', title: 'Breakout Pattern' },
-  { id: 3, section: 'STEP 03 / 07', title: 'Breakout Pattern' },
-  { id: 4, section: 'STEP 04 / 07', title: 'Pain & Experience' },
-  { id: 5, section: 'STEP 05 / 07', title: 'Skincare Habits' },
-  { id: 6, section: 'STEP 06 / 07', title: 'Skincare Habits' },
-  { id: 7, section: 'STEP 07 / 07', title: 'Lifestyle Triggers' },
+  { id: 1, section: 'STEP 01 / 08', title: 'Skin Scan' },
+  { id: 2, section: 'STEP 02 / 08', title: 'Breakout Pattern' },
+  { id: 3, section: 'STEP 03 / 08', title: 'Breakout Pattern' },
+  { id: 4, section: 'STEP 04 / 08', title: 'Pain & Experience' },
+  { id: 5, section: 'STEP 05 / 08', title: 'Skincare Habits' },
+  { id: 6, section: 'STEP 06 / 08', title: 'Skincare Habits' },
+  { id: 7, section: 'STEP 07 / 08', title: 'Lifestyle Triggers' },
+  { id: 8, section: 'STEP 08 / 08', title: 'Breakout Location' },
 ];
 
 function OptionButton({ label, selected, onClick }) {
@@ -218,7 +219,20 @@ export default function ConsultationFlow({ step, setStep, formData, setFormData,
               <OptionButton key={opt} label={opt} selected={formData.sleep_change===opt} onClick={() => upd('sleep_change', opt)}/>
             ))}
           </div>
-          <NavButtons onBack={() => setStep(6)} onNext={() => onAnalyze()} nextDisabled={!formData.stress_change || !formData.sleep_change} nextLabel="Analyze My Skin"/>
+          <NavButtons onBack={() => setStep(6)} onNext={() => setStep(8)} nextDisabled={!formData.stress_change || !formData.sleep_change} />
+        </>
+      )}
+
+      {/* Step 8: Location */}
+      {step === 8 && (
+        <>
+          <p style={{fontSize:'15px',color:'var(--text-muted)',marginBottom:'1.5rem',fontWeight:600}}>Where are your breakouts primarily located?</p>
+          <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+            {['Jawline / Chin / Lower Face', 'Forehead / Nose (T-Zone)', 'Cheeks', 'Back / Chest / Other'].map(opt => (
+              <OptionButton key={opt} label={opt} selected={formData.location===opt} onClick={() => upd('location', opt)}/>
+            ))}
+          </div>
+          <NavButtons onBack={() => setStep(7)} onNext={() => onAnalyze()} nextDisabled={!formData.location} nextLabel="Analyze My Skin"/>
         </>
       )}
     </motion.div>

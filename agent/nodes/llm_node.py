@@ -24,6 +24,7 @@ def run_llm_node(state: PipelineState, client, analysis_history: list = None) ->
     # Build consultation summary
     consultation = f"""
 User Consultation Answers:
+- Breakout Location: {state.location}
 - Breakout duration: {state.duration}
 - Getting worse: {state.worsening}
 - Pain level: {state.pain_level}
@@ -68,7 +69,7 @@ STRICT TONE & FORMAT INSTRUCTIONS:
 🧠 What we considered:
 - Image: {state.predicted_class} ({state.image_result})
 - Adjusted Severity: {state.lifestyle_result}
-- Key Factors: {state.duration}, pain: {state.pain_level}, stress: {state.stress_change}
+- Key Factors: Location: {state.location}, duration: {state.duration}, pain: {state.pain_level}, stress: {state.stress_change}
 
 🌞 Morning Routine:
 - (step 1: Cleanse)

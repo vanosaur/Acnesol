@@ -67,6 +67,7 @@ class AnalyzeParams(BaseModel):
     new_products: str = ""
     stress_change: str = ""
     sleep_change: str = ""
+    location: str = ""
     image_base64: Optional[str] = None
     groq_api_key: Optional[str] = None
     manual_type_override: Optional[str] = None
@@ -117,6 +118,7 @@ async def analyze_skin(params: AnalyzeParams):
             new_products=params.new_products,
             stress_change=params.stress_change,
             sleep_change=params.sleep_change,
+            location=params.location,
             image=image,
             image_base64=params.image_base64,
             manual_type_override=params.manual_type_override
@@ -160,47 +162,46 @@ async def chat(params: ChatParams):
     resources = get_resources()
     kb = resources["knowledge_base"]
     
-    # Simple RAG retrieval
+    # Dynamic RAG routing: Only query vector DB if query relates to skincare/acne
+    skincare_keywords = {"acne", "pimple", "skin", "routine", "wash", "cream", "salicylic", 
+                         "benzoyl", "purge", "dry", "oily", "breakout", "scar", "cyst", 
+                         "treat", "product", "moisturizer", "spf", "sunscreen", "hyaluronic", 
+                         "niacinamide", "retinoid", "adapalene", "scarring", "hormonal", "fungal",
+                         "diet", "routine", "cleanser", "face", "treatment", "cure", "help"}
+    
+    # Check if any skincare keyword is in user query, or if query is moderately long/complex
+    query_lower = params.message.lower()
+    is_skincare_query = any(kw in query_lower for kw in skincare_keywords) or len(params.message) > 35
+    
     context_chunks = []
-    if kb:
+    if kb and is_skincare_query:
         context_chunks = kb.retrieve(params.message, top_k=2)
 
-    context_text = "\n\n".join(context_chunks) if context_chunks else "No specific context retrieved."
+    context_text = "\n\n".join(context_chunks) if context_chunks else "No specific skincare context retrieved for general chat."
     
     profile = ""
     if params.analysis:
         profile = f"""
 USER PROFILE (from latest analysis):
 - Acne type detected: {params.analysis.get('predicted_class', 'N/A')}
-- Image severity: {params.analysis.get('image_severity', 'N/A')}
-- Adjusted severity: {params.analysis.get('lifestyle', 'N/A')}
-- Model confidence: {params.analysis.get('confidence_label', 'N/A')}
-- Main trigger identified: {params.analysis.get('main_trigger', 'N/A')}
-- Breakout duration: {params.analysis.get('duration', 'N/A')}
-- Getting worse: {params.analysis.get('worsening', 'N/A')}
-- Pain level: {params.analysis.get('pain_level', 'N/A')}
-- New products used: {params.analysis.get('new_products', 'N/A')}
-- Recent stress change: {params.analysis.get('stress_change', 'N/A')}
+- Severity: {params.analysis.get('lifestyle', 'N/A')}
+- Primary Trigger: {params.analysis.get('main_trigger', 'N/A')}
+- Duration: {params.analysis.get('duration', 'N/A')}
 """
 
-    system_msg = f"""You are AcneSol, a friendly and knowledgeable AI skincare assistant.
-Be warm, concise, and evidence-based. Use the knowledge context below to inform your answers.
-If the user has analysis data, reference it to personalize your response.
+    system_msg = f"""You are AcneSol, a friendly and concise AI skin assistant. 
+Use context and user analysis to give brief (3-5 sentences), evidence-based skincare tips.
+Always be warm, encouraging, and supportive. Use bullet points for lists.
+Never diagnose or act as a doctor; recommend a dermatologist when needed.
 
-KNOWLEDGE CONTEXT:
+CONTEXT:
 {context_text}
-{profile}
-
-Guidelines:
-- Keep answers concise (3-6 sentences typically)
-- Use bullet points for lists
-- Be encouraging and supportive
-- Reference the user's specific data when relevant
-- If the user needs professional help, suggest seeing a dermatologist
-- Never diagnose; you are an AI assistant, not a doctor"""
+{profile}"""
 
     messages = [{"role": "system", "content": system_msg}]
-    for msg in params.history[-10:]:
+    # Keep only the last 4 messages (2 conversational turns) to prevent context window overload
+    # and memory issues, saving tokens.
+    for msg in params.history[-4:]:
         messages.append({"role": msg.role, "content": msg.content})
     messages.append({"role": "user", "content": params.message})
 

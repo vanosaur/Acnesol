@@ -54,11 +54,12 @@ def predict_acne_type(model, pil_image: Image.Image):
     label = class_labels[class_index]
     all_scores = {class_labels[i]: float(pred_img[i]) for i in range(len(class_labels))}
 
-    if confidence < 0.35:
-        label = "Clear"
+    # To prevent false positives on clear skin or non-acne images,
+    # we enforce a strict confidence threshold. Softmax on 5 classes
+    # will always force a prediction, so low confidence means it's likely clear skin.
+    if confidence < 0.70:
+        label = "Clear / No Acne"
         severity = "Healthy"
-    elif confidence < 0.6:
-        severity = "Uncertain"
     else:
         severity = severity_map[label]
 

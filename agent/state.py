@@ -12,6 +12,7 @@ class PipelineState:
     new_products: str = ""
     stress_change: str = ""
     sleep_change: str = ""
+    location: str = ""
     image: Optional[Image.Image] = None
     image_base64: Optional[str] = None
     manual_type_override: Optional[str] = None

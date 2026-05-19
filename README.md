@@ -23,15 +23,11 @@ The application combines traditional machine learning, deep learning, and genera
 
 ## Features
 
-- Facial image analysis using MobileNetV2 and TensorFlow
-- Acne type and severity classification
-- Lifestyle-based consultation questionnaire
-- Retrieval-augmented generation using TF-IDF
-- Personalized morning and night routines
-- Ingredient and product recommendations
-- Conversational follow-up assistant
-- Interactive React-based user interface
-- Responsive design with animations and glassmorphism
+- **🧠 Smart Severity Assessment**: Re-ordered pipeline that combines image analysis with lifestyle factors for precise, evidence-based grading.
+- **✏️ Human-in-the-Loop Correction**: Allows users to manually override AI misidentifications via a premium "EDIT" UI, triggering an immediate re-analysis.
+- **🎨 Premium UI/UX**: Fully responsive, glassmorphic React interface featuring fluid animations and mobile-optimized consultation flows.
+- **🔍 RAG-Powered Insights**: Uses Retrieval Augmented Generation (RAG) to pull evidence-based advice from a curated dermatology knowledge base.
+- **💬 AI Chat Assistant**: Follow-up support to ask questions about your routine or specific ingredients.
 
 ---
 

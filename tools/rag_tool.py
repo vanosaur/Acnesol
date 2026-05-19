@@ -1,72 +1,90 @@
-import numpy as np
+import os
+# Override HF cache directory to avoid local permission issues on global home folder
+os.environ["HF_HOME"] = os.path.abspath("data/hf_cache")
 
-# Prefer TF-IDF for production to save memory (Render free tier)
-try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.metrics.pairwise import cosine_similarity
-    _RAG_MODE = "tfidf"
-except ImportError:
-    # Fallback to semantic if sklearn is missing for some reason
-    try:
-        from sentence_transformers import SentenceTransformer
-        import faiss
-        _RAG_MODE = "semantic"
-    except ImportError:
-        _RAG_MODE = "none"
+import chromadb
+from chromadb.config import Settings
+from sentence_transformers import SentenceTransformer
 
 class KnowledgeBase:
-    """Lightweight knowledge base with semantic or TF-IDF retrieval."""
+    """Knowledge base using ChromaDB for persistent storage and retrieval."""
 
-    def __init__(self, filepath: str = "data/acne_knowledge.txt"):
-        self.chunks = self._load_chunks(filepath)
-        self.mode = _RAG_MODE
-        self._build_index()
-
-    def _load_chunks(self, filepath: str) -> list:
+    def __init__(self, filepath: str = "data/acne_knowledge.txt", db_path: str = "data/chroma_db"):
+        self.filepath = filepath
+        self.db_path = db_path
+        self.collection_name = "acne_knowledge"
+        
+        # Initialize persistent client
+        self.client = chromadb.PersistentClient(path=self.db_path)
+        self.model = SentenceTransformer("all-MiniLM-L6-v2")
+        
+        # Check if collection exists or needs to be created/populated
         try:
-            with open(filepath, "r") as f:
+            self.collection = self.client.get_collection(name=self.collection_name)
+            self._is_populated = self.collection.count() > 0
+        except:
+            self.collection = self.client.create_collection(name=self.collection_name)
+            self._is_populated = False
+
+        # Always re-check chunks to see if we need to update
+        self._sync_db()
+
+    def _load_chunks(self) -> list:
+        try:
+            with open(self.filepath, "r") as f:
                 text = f.read()
             chunks = [c.strip() for c in text.split("\n\n") if c.strip() and len(c.strip()) > 30]
             return chunks
         except FileNotFoundError:
+            print(f"Warning: {self.filepath} not found.")
             return []
 
-    def _build_index(self):
-        if not self.chunks:
+    def _sync_db(self):
+        chunks = self._load_chunks()
+        if not chunks:
             return
-
-        if self.mode == "semantic":
-            self.model = SentenceTransformer("all-MiniLM-L6-v2")
-            embeddings = self.model.encode(self.chunks, normalize_embeddings=True)
-            self.index = faiss.IndexFlatIP(embeddings.shape[1])
-            self.index.add(embeddings.astype("float32"))
-        else:
-            self.vectorizer = TfidfVectorizer(
-                stop_words="english",
-                max_features=5000,
-                ngram_range=(1, 2),
-            )
-            self.tfidf_matrix = self.vectorizer.fit_transform(self.chunks)
+            
+        current_count = self.collection.count()
+        if current_count == len(chunks):
+            self._is_populated = True
+            return
+            
+        print("Populating/Updating ChromaDB with knowledge base chunks...")
+        # If mismatch in length, just recreate for simplicity in this prototype
+        if current_count > 0:
+            self.client.delete_collection(name=self.collection_name)
+            self.collection = self.client.create_collection(name=self.collection_name)
+            
+        embeddings = self.model.encode(chunks, normalize_embeddings=True).tolist()
+        ids = [f"chunk_{i}" for i in range(len(chunks))]
+        
+        self.collection.add(
+            documents=chunks,
+            embeddings=embeddings,
+            ids=ids
+        )
+        self._is_populated = True
+        print(f"Successfully added {len(chunks)} chunks to ChromaDB.")
 
     def retrieve(self, query: str, top_k: int = 3) -> list:
-        if not self.chunks:
+        if not self._is_populated:
             return []
-        top_k = min(top_k, len(self.chunks))
-
-        if self.mode == "semantic":
-            q_emb = self.model.encode([query], normalize_embeddings=True).astype("float32")
-            scores, indices = self.index.search(q_emb, top_k)
-            return [self.chunks[i] for i in indices[0] if 0 <= i < len(self.chunks)]
-        else:
-            q_vec = self.vectorizer.transform([query])
-            sims = cosine_similarity(q_vec, self.tfidf_matrix).flatten()
-            top_indices = sims.argsort()[-top_k:][::-1]
-            return [self.chunks[i] for i in top_indices if sims[i] > 0.02]
+            
+        q_emb = self.model.encode([query], normalize_embeddings=True).tolist()
+        results = self.collection.query(
+            query_embeddings=q_emb,
+            n_results=top_k
+        )
+        
+        if results and results['documents'] and results['documents'][0]:
+            return results['documents'][0]
+        return []
 
     def get_info(self) -> dict:
+        count = self.collection.count() if self._is_populated else 0
         return {
-            "mode": self.mode,
-            "num_chunks": len(self.chunks),
+            "mode": "chromadb",
+            "num_chunks": count,
         }
 
 def load_knowledge_base(path: str = "data/acne_knowledge.txt"):

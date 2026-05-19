@@ -10,6 +10,7 @@ const DEFAULT_FORM = {
   duration: '', worsening: '', pain_level: '',
   skincare_routine: '', new_products: '',
   stress_change: '', sleep_change: '',
+  location: '',
   image: null, imageBase64: null
 };
 
@@ -33,7 +34,7 @@ export default function App() {
   useEffect(() => sessionStorage.setItem('acnesol_chatHistory', JSON.stringify(chatHistory)), [chatHistory]);
 
   const handleAnalyze = async (manualType = null) => {
-    setStep(8); setIsLoading(true); setError(null);
+    setStep(9); setIsLoading(true); setError(null);
     try {
       const response = await fetch(`${API_BASE}/api/analyze`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -41,13 +42,13 @@ export default function App() {
           duration: formData.duration, worsening: formData.worsening,
           pain_level: formData.pain_level, skincare_routine: formData.skincare_routine,
           new_products: formData.new_products, stress_change: formData.stress_change,
-          sleep_change: formData.sleep_change, image_base64: formData.imageBase64,
+          sleep_change: formData.sleep_change, location: formData.location, image_base64: formData.imageBase64,
           groq_api_key: groqKey,
           manual_type_override: manualType
         })
       });
       const data = await response.json();
-      if (data.success) { setAnalysisResult(data); setStep(9); }
+      if (data.success) { setAnalysisResult(data); setStep(10); }
       else throw new Error(data.detail || 'Analysis failed');
     } catch (err) { setError(err.message); setStep(1); }
     finally { setIsLoading(false); }
@@ -75,7 +76,7 @@ export default function App() {
   };
 
   const handleBackToForm = () => {
-    setAnalysisResult(null); setStep(7);
+    setAnalysisResult(null); setStep(8);
   };
 
   return (
@@ -100,17 +101,17 @@ export default function App() {
       <main className="flex-1 container py-12 flex items-center justify-center p-mobile-4" style={{paddingTop:'1rem'}}>
         <AnimatePresence mode="wait">
           {step === 0 && <LandingPage key="landing" onStart={() => setStep(1)} />}
-          {step >= 1 && step <= 7 && (
+          {step >= 1 && step <= 8 && (
             <ConsultationFlow key="consult" step={step} setStep={setStep} formData={formData} setFormData={setFormData} onAnalyze={handleAnalyze} error={error} />
           )}
-          {step === 8 && <AnalyzingState key="analyzing" />}
-          {step === 9 && (
+          {step === 9 && <AnalyzingState key="analyzing" />}
+          {step === 10 && (
             <ResultsDashboard key="results" result={analysisResult} chatHistory={chatHistory} chatInput={chatInput} setChatInput={setChatInput} onChat={handleChat} isChatLoading={isChatLoading} scrollRef={scrollRef} onRestart={handleRestart} onBackToForm={handleBackToForm} onOverrideType={handleAnalyze} />
           )}
         </AnimatePresence>
       </main>
 
-      {step < 9 && (
+      {step < 10 && (
         <footer className="p-8 text-center" style={{fontSize:'11px',color:'var(--text-light)',fontWeight:600,letterSpacing:'0.1em',borderTop:'1px solid var(--glass-border)'}}>
           © 2025 ACNESOL · INTELLIGENT DERMATOLOGY ASSISTANT
         </footer>

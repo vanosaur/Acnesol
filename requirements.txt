@@ -1,4 +1,4 @@
-tensorflow-cpu==2.18.0
+tensorflow>=2.18.0
 joblib
 numpy
 groq>=0.9.0
@@ -12,3 +12,5 @@ pydantic
 python-dotenv
 langchain
 langchain-community
+chromadb
+sentence-transformers

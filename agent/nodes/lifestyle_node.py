@@ -22,6 +22,8 @@ def _escalate(severity: str, worsening: str, pain: str) -> str:
 
 def _get_trigger(state: PipelineState) -> str:
     """Return single prioritized trigger."""
+    if state.location == "Jawline / Chin / Lower Face":
+        return "Hormonal-pattern acne"
     if state.new_products == "Yes":
         return "New Product Reaction"
     if state.worsening == "Yes" and state.pain_level == "Painful / deep":

@@ -17,6 +17,7 @@ def create_state(
     new_products: str = "",
     stress_change: str = "",
     sleep_change: str = "",
+    location: str = "",
     image: Optional[Image.Image] = None,
     image_base64: Optional[str] = None,
     manual_type_override: Optional[str] = None
@@ -30,6 +31,7 @@ def create_state(
         new_products=new_products,
         stress_change=stress_change,
         sleep_change=sleep_change,
+        location=location,
         image=image,
         image_base64=image_base64,
         manual_type_override=manual_type_override
