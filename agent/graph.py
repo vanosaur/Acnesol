@@ -37,6 +37,8 @@ def create_state(
         manual_type_override=manual_type_override
     )
 
+import threading
+
 def run_pipeline(state: PipelineState, resources: Dict[str, Any], analysis_history: list = None) -> PipelineState:
     """Orchestrates the pipeline execution."""
     
@@ -46,16 +48,25 @@ def run_pipeline(state: PipelineState, resources: Dict[str, Any], analysis_histo
     # Node 2: Extract lifestyle prediction (depends on image result)
     state = run_lifestyle_node(state, resources["ml_model"])
     
-    # Node 3: Retrieve relevant knowledge
-    state = run_rag_node(state, resources["knowledge_base"])
-    
-    # Node 3.5: Fetch Live Products
-    state = run_product_node(state)
+    # Node 3 & 3.5: RAG retrieval + Live product search run IN PARALLEL
+    # since they are independent of each other
+    def _run_rag():
+        run_rag_node(state, resources["knowledge_base"])
+
+    def _run_products():
+        run_product_node(state)
+
+    t_rag = threading.Thread(target=_run_rag)
+    t_products = threading.Thread(target=_run_products)
+    t_rag.start()
+    t_products.start()
+    t_rag.join()
+    t_products.join()
     
     # Node 4: Generate insights using LLM
     state = run_llm_node(state, resources["llm_client"], analysis_history)
     
-    # Node 5: Medical Guardrail Verification
+    # Node 5: Medical Guardrail Verification (now instant regex — no extra LLM call)
     state = run_guardrail_node(state, resources["llm_client"])
     
     return state

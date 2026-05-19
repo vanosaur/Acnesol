@@ -113,7 +113,7 @@ export default function App() {
 
       {step < 10 && (
         <footer className="p-8 text-center" style={{fontSize:'11px',color:'var(--text-light)',fontWeight:600,letterSpacing:'0.1em',borderTop:'1px solid var(--glass-border)'}}>
-          © 2025 ACNESOL · INTELLIGENT DERMATOLOGY ASSISTANT
+          ACNESOL · INTELLIGENT DERMATOLOGY ASSISTANT
         </footer>
       )}
     </div>

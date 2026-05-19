@@ -3,7 +3,7 @@ joblib
 numpy
 groq>=0.9.0
 pillow
-scikit-learn
+scikit-learn==1.6.1
 duckduckgo-search
 fastapi
 uvicorn
@@ -12,5 +12,3 @@ pydantic
 python-dotenv
 langchain
 langchain-community
-chromadb
-sentence-transformers
